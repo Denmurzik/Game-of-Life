@@ -1,6 +1,0 @@
-build/out.dbg.json
-build/out.img
-jar/logisim-banked-memory-0.2.2.jar
-jar/logisim-cdm-emulator-0.2.2.jar
-jar/logisim-debugger-0.2.2.jar
-.gitignore
