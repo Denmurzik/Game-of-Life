@@ -1256,6 +1256,11 @@ This file is intended to be loaded by Logisim (http://www.cburch.com/logisim/).
       <a name="bit6" val="none"/>
       <a name="bit7" val="none"/>
     </comp>
+    <comp lib="5" loc="(910,340)" name="Button">
+      <a name="label" val="game ON / OFF"/>
+      <a name="labelloc" val="west"/>
+      <a name="labelfont" val="SansSerif bold 12"/>
+    </comp>
     <comp lib="0" loc="(610,3030)" name="Pull Resistor">
       <a name="facing" val="west"/>
     </comp>
@@ -1334,8 +1339,8 @@ This file is intended to be loaded by Logisim (http://www.cburch.com/logisim/).
     <comp lib="3" loc="(660,2490)" name="Comparator"/>
     <comp lib="4" loc="(610,130)" name="ROM">
       <a name="contents">addr/data: 8 8
-d0 fa b0 d3 9 d1 f1 b5
-ab d3 f2 bf 8c
+d1 f2 b6 a e0 2 d0 f6
+a0 d0 f7 a0
 </a>
     </comp>
     <comp lib="5" loc="(1220,900)" name="DotMatrix">
@@ -1755,11 +1760,6 @@ ab d3 f2 bf 8c
     <comp lib="0" loc="(680,1380)" name="Tunnel">
       <a name="label" val="cell state"/>
       <a name="labelfont" val="SansSerif plain 9"/>
-    </comp>
-    <comp lib="0" loc="(910,340)" name="Pin">
-      <a name="tristate" val="false"/>
-      <a name="label" val="game ON/OFF"/>
-      <a name="labelfont" val="SansSerif bold 12"/>
     </comp>
     <comp lib="2" loc="(410,620)" name="Multiplexer">
       <a name="width" val="5"/>
