@@ -46,10 +46,50 @@ computationCell: #принимает r0 - сумму соседий > 0, r1 - с
     ldi r2, dethCondition
   fi
 
+  dec r0
+  add r0, r2
+  ld r2, r2
+
+  if
+    tst r2
+  is nz
+    ldi r0, invertCellState
+    st r0, r0
+
+    ldi r0, noChangesFlag
+    st r0, r0
+  fi
+rts
+
+preparation:
+  setsp 0xc0
+
+  ldi r1, gameState
+  do
+    ld r1, r0
+    tst r0
+  until nz
+
+  ldi r1, IObirthCondition
+  ld r1, r0
+  ldi r1, birthCondition
+  jsr loadingCondition
+
+  ldi r1, IOsurvivalCondition
+  ld r1, r0
+  ldi r1, dethCondition
+  jsr loadingCondition
+
+
+main:
+  ldi r0, noChangesFlag
+  ldi r1, 0
+  st r0, r1 
+
+  ldi r0, updateFixedBuffer
+  st r0, r0
+
   
-
-
-
 
 
 end
