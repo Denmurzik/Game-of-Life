@@ -9,7 +9,7 @@ asect 0xf0
 IO_Y: ds 1
 IO_X: ds 1
 gameState: ds 1 #старт 1, финиш 0
-IObithCondition: ds 1 #кол во соседей для рождения
+IObirthCondition: ds 1 #кол во соседей для рождения
 IOsurvivalCondition: ds 1 #кол во соседей для выживания
 gameMode: ds 1 
 changeCellState: ds 1 #изменить состояние текущей клетки на противоположное
@@ -55,7 +55,7 @@ computationCell: #принимает r0 - сумму соседий > 0, r1 - с
   if
     tst r2
   is nz
-    ldi r0, invertCellState
+    ldi r0, changeCellState
     st r0, r0
 
     ldi r0, noChangesFlag
@@ -64,7 +64,7 @@ computationCell: #принимает r0 - сумму соседий > 0, r1 - с
 rts
 
 preparation:
-  setsp 0xc0
+  setsp 0xdf
 
   ldi r1, gameState
   do
@@ -111,7 +111,7 @@ main:
       ld r3, r3
       tst r3
     is nz
-      jsr nextRow
+      br nextRow
     fi
     
     ldi r1, 0
@@ -119,7 +119,7 @@ main:
     st r0, r1
 
     ldi r3, nextCell
-    ldi r3, r2
+    ld r3, r2
 
     do
       move r2, r1
@@ -141,7 +141,7 @@ main:
         if
           tst r1
         is nz
-          ldi r0, invertCellState
+          ldi r0, changeCellState
           st r0, r0
 
           ldi r0, noChangesFlag
@@ -163,17 +163,17 @@ main:
 
 ldi r0, noChangesFlag
 ld r0, r0
-tst r0
 if 
   tst r0
   is nz
-    jsr main
-else
-  ldi r0, gameState
-  st r0, r0
-  br preparation
+    br main
 fi
 
+ldi r0, gameState
+st r0, r0
+br preparation
 
 
+
+halt
 end
