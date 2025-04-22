@@ -18,6 +18,8 @@ cellState: ds 1
 countOfNeighbors: ds 1  #кол во живых соседей  
 isRowNull: ds 1 #пропуск строки
 showResult: ds 1 # нужно для status bar для показа результата win lose
+nextCell: ds 1 #адрес следующей ячейки
+
 
 asect 0x00
 br preparation
@@ -89,7 +91,89 @@ main:
   ldi r0, updateFixedBuffer
   st r0, r0
 
+  ldi r3, 31
+  do
+    if
+      ldi r0, gameState
+      ld r0, r0
+      tst r0
+    is z
+      br preparation
+    fi
+
+    push r3
+
+    ldi r0, IO_Y
+    st r0, r3
+
+    if
+      ldi r3, isRowNull
+      ld r3, r3
+      tst r3
+    is nz
+      jsr nextRow
+    fi
+    
+    ldi r1, 0
+    ldi r0, IO_X
+    st r0, r1
+
+    ldi r3, nextCell
+    ldi r3, r2
+
+    do
+      move r2, r1
+      push r1
+
+      ldi r0, IO_X
+      st r0, r1  
+
+      ldi r0, countOfNeighbors
+      ld r0, r0
+      ldi r1, cellState
+      ld r1, r1
+
+      if 
+        tst r0
+      is nz
+        jsr computationCell
+      else
+        if
+          tst r1
+        is nz
+          ldi r0, invertCellState
+          st r0, r0
+
+          ldi r0, noChangesFlag
+          st r0, r0
+        fi
+      fi
+
+      pop r1
+      ld r3, r2
+
+      cmp r2, r1
+    until ge 
+
+    nextRow:
+      pop r3
+      dec r3
   
+  until mi
+
+ldi r0, noChangesFlag
+ld r0, r0
+tst r0
+if 
+  tst r0
+  is nz
+    jsr main
+else
+  ldi r0, gameState
+  st r0, r0
+  br preparation
+fi
+
 
 
 end
