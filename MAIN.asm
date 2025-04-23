@@ -22,7 +22,7 @@ showResult: ds 1 # нужно для status bar для показа резуль
 asect 0x00
 br main
 
-computeingCell: #r0 - состоние ячейки, r1 - сумма соседей
+computingCell: #r0 - состоние ячейки, r1 - сумма соседей
     if 
         tst r0
     is nz
@@ -123,7 +123,7 @@ main:
             if 
                 tst r1
             is nz
-                jsr computeingCell
+                jsr computingCell
             else
                 if
                     tst r0
