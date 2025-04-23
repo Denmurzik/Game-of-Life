@@ -18,7 +18,7 @@ cellState: ds 1
 countOfNeighbors: ds 1  #кол во живых соседей  
 isRowNull: ds 1 #пропуск строки
 showResult: ds 1 # нужно для status bar для показа результата win lose
-
+nextCell: ds 1 #адрес следующей ячейки
 
 
 asect 0x00
@@ -161,17 +161,17 @@ main:
   
   until mi
 
-  ldi r0, noChangesFlag
-  ld r0, r0
-  if 
-    tst r0
-    is nz
-      br main
-  fi
+ldi r0, noChangesFlag
+ld r0, r0
+if 
+  tst r0
+  is nz
+    br main
+fi
 
-  ldi r0, gameState
-  st r0, r0
-  br preparation
+ldi r0, gameState
+st r0, r0
+br preparation
 
 
 
