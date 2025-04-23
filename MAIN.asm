@@ -91,7 +91,7 @@ main:
     ldi r0, noChangesFlag
     ldi r1, 0
     st r0, r1 # флаг изменений = 0
-    
+
     ldi r0, updateFixedBuffer
     st r0, r0 # обновляем экран
     
@@ -149,6 +149,8 @@ main:
     if 
         tst r0
     is z
+        ldi r0, gameState
+        st r0, r0
         br main
     else
         br rowIteration
