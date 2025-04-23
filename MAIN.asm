@@ -64,9 +64,7 @@ rts
 
 main:
     setsp 0xdf
-    ldi r0, noChangesFlag
-    ldi r1, 0
-    st r0, r1 # флаг изменений = 0
+    
 
     ldi r0, gameState
     do
@@ -90,6 +88,10 @@ main:
     jsr loadingCondition
 
     rowIteration:
+    ldi r0, noChangesFlag
+    ldi r1, 0
+    st r0, r1 # флаг изменений = 0
+    
     ldi r0, updateFixedBuffer
     st r0, r0 # обновляем экран
     
@@ -154,25 +156,4 @@ main:
 
 
 halt
-end
-
-
-
-
-
-
-            
-
-
-
-        
-        
-
-
-
-
-
-
-
-
 end
