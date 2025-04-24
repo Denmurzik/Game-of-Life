@@ -95,13 +95,6 @@ main:
     
 
     generation:
-    if
-        ldi r0, gameMode
-        ld r0, r0
-        tst r0
-    is nz
-        push r2
-    fi
 
     if
         ldi r0, gameMode
@@ -109,16 +102,25 @@ main:
         tst r0
     is nz
         if
+            tst r2
+        is z
+            br showResultOfGame
+        fi
+
+        push r2
+
+        if
             ldi r0, noAnyAlive
             ld r0, r0
             tst r0
         is nz
+            showResultOfGame:
             ldi r0, showResult
             st r0, r0 # показываем результат
             ldi r0, gameState
             st r0, r0
-            ldi r0, clearField
-            st r0, r0 # очищаем поле
+           # ldi r0, clearField
+            #st r0, r0 # очищаем поле
             br main
         fi
     fi
