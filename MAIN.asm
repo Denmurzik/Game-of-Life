@@ -63,16 +63,15 @@ loadingCondition: #r1 - адрес, r0 - условие
 rts
 
 
-
 main:
     setsp 0xdf
     
-
     ldi r0, gameState
     do
         ld r0, r1
         tst r1
     until nz  # ждем старта игры
+
 
     ldi r0, updateFixedBuffer
     st r0, r0
@@ -85,11 +84,12 @@ main:
 
     ldi r1, IOsurvivalCondition
     ld r1, r0
-    not r0
+    not r0 #из услови
     ldi r1, dethCondition
     jsr loadingCondition
 
     rowIteration:
+
     ldi r0, noChangesFlag
     ldi r1, 0
     st r0, r1 # флаг изменений = 0
@@ -99,6 +99,14 @@ main:
     
     ldi r3, 31 # Y
     do
+        if
+            ldi r0, gameState
+            ld r0, r0
+            tst r0
+        is z
+            br main
+        fi
+
         push r3
         ldi r0, IO_Y
         st r0, r3
