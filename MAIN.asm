@@ -3,7 +3,7 @@ noChangesFlag: ds 1
 
 asect 0xe0
 birthCondition: ds 8
-dethCondition: ds 8
+deathCondition: ds 8
 
 asect 0xf0
 IO_Y: ds 1
@@ -11,7 +11,7 @@ IO_X: ds 1
 gameState: ds 1 #старт 1, финиш 0
 IObirthCondition: ds 1 #кол во соседей для рождения
 IOsurvivalCondition: ds 1 #кол во соседей для выживания
-gameMode: ds 1 
+gameMode: ds 1 # режим игры 0 - обычный, 1 - с границами
 changeCellState: ds 1 #изменить состояние текущей клетки на противоположное
 updateFixedBuffer: ds 1 #обновить экран
 cellState: ds 1 
@@ -19,16 +19,16 @@ countOfNeighbors: ds 1  #кол во живых соседей
 isRowNull: ds 1 #пропуск строки
 showResult: ds 1 # нужно для status bar для показа результата win / lose
 noAnyAlive: ds 1 #все клетки мертвы
-
+clearField: ds 1 #очистить поле
 
 asect 0x00
 br main
 
-computingCell: #r0 - состоние ячейки, r1 - сумма соседей
+computingCell: #r0 - состояние ячейки, r1 - сумма соседей
     if 
         tst r0
     is nz
-        ldi r2, dethCondition
+        ldi r2, deathCondition
     else
         ldi r2, birthCondition
     fi
@@ -48,7 +48,7 @@ computingCell: #r0 - состоние ячейки, r1 - сумма соседе
     fi
 rts
 
-loadingCondition: #r1 - адрес, r0 - условие
+loadingCondition: #r1 - адрес, r0 - IO условие
     ldi r2, 8
     while 
         tst r2
@@ -63,6 +63,7 @@ loadingCondition: #r1 - адрес, r0 - условие
 rts
 
 
+
 main:
     setsp 0xdf
     
@@ -71,10 +72,6 @@ main:
         ld r0, r1
         tst r1
     until nz  # ждем старта игры
-
-
-    ldi r0, updateFixedBuffer
-    st r0, r0
     
     # загрузка условий
     ldi r1, IObirthCondition
@@ -84,11 +81,47 @@ main:
 
     ldi r1, IOsurvivalCondition
     ld r1, r0
-    not r0 #из услови
-    ldi r1, dethCondition
+    not r0 #из условия выживания получаем условия смерти
+    ldi r1, deathCondition
     jsr loadingCondition
 
-    rowIteration:
+    if
+        ldi r0, gameMode
+        ld r0, r0
+        tst r0
+    is nz
+        ldi r2, 15 # границы
+    fi
+    
+
+    generation:
+    if
+        ldi r0, gameMode
+        ld r0, r0
+        tst r0
+    is nz
+        push r2
+    fi
+
+    if
+        ldi r0, gameMode
+        ld r0, r0
+        tst r0
+    is nz
+        if
+            ldi r0, noAnyAlive
+            ld r0, r0
+            tst r0
+        is nz
+            ldi r0, showResult
+            st r0, r0 # показываем результат
+            ldi r0, gameState
+            st r0, r0
+            ldi r0, clearField
+            st r0, r0 # очищаем поле
+            br main
+        fi
+    fi
 
     ldi r0, noChangesFlag
     ldi r1, 0
@@ -154,18 +187,34 @@ main:
         dec r3
     until mi
 
-    ldi r0, noChangesFlag 
-    ld r0, r0
-    if 
+    if
+        ldi r0, gameMode
+        ld r0, r0
         tst r0
-    is z
-        ldi r0, gameState
-        st r0, r0
-        br main
-    else
-        br rowIteration
+    is nz
+        pop r2
+        dec r2
     fi
 
+    if
+        ldi r0, gameMode
+        ld r0, r0
+        tst r0
+    is z
+        ldi r0, noChangesFlag 
+        ld r0, r0
+        if 
+            tst r0
+        is z
+            ldi r0, gameState
+            st r0, r0
+            br main
+        else
+            br generation
+        fi
+    else
+        br generation
+    fi
 
 halt
 end
