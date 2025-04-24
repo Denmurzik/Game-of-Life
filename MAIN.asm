@@ -18,6 +18,8 @@ cellState: ds 1
 countOfNeighbors: ds 1  #кол во живых соседей  
 isRowNull: ds 1 #пропуск строки
 showResult: ds 1 # нужно для status bar для показа результата win / lose
+noAnyAlive: ds 1 #все клетки мертвы
+
 
 asect 0x00
 br main
