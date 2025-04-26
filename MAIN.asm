@@ -1,5 +1,5 @@
 asect 0xdf
-noChangesFlag: ds 1 
+anyChangesFlag: ds 1 
 
 asect 0xe0
 birthCondition: ds 8
@@ -42,7 +42,7 @@ computingCell: #r0 - состояние ячейки, r1 - сумма сосед
     is nz
         ldi r0, changeCellState
         st r0, r0
-        ldi r0, noChangesFlag
+        ldi r0, anyChangesFlag
         ldi r1, 1
         st r0, r1 # флаг изменений = 1
     fi
@@ -123,7 +123,7 @@ main:
         fi
     fi
 
-    ldi r0, noChangesFlag
+    ldi r0, anyChangesFlag
     ldi r1, 0
     st r0, r1 # флаг изменений = 0
 
@@ -173,7 +173,7 @@ main:
                 is nz
                     ldi r0, changeCellState
                     st r0, r0
-                    ldi r0, noChangesFlag
+                    ldi r0, anyChangesFlag
                     ldi r1, 1
                     st r0, r1 # флаг изменений = 1
                 fi
@@ -201,7 +201,7 @@ main:
         ld r0, r0
         tst r0
     is z
-        ldi r0, noChangesFlag 
+        ldi r0, anyChangesFlag 
         ld r0, r0
         if 
             tst r0
