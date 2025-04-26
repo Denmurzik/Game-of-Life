@@ -19,7 +19,7 @@ countOfNeighbors: ds 1  #кол во живых соседей
 isRowNull: ds 1 #пропуск строки
 showResult: ds 1 # нужно для status bar для показа результата win / lose
 noAnyAlive: ds 1 #все клетки мертвы
-clearField: ds 1 #очистить поле
+
 
 asect 0x00
 br main
@@ -119,8 +119,6 @@ main:
             st r0, r0 # показываем результат
             ldi r0, gameState
             st r0, r0
-           # ldi r0, clearField
-            #st r0, r0 # очищаем поле
             br main
         fi
     fi
