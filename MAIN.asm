@@ -1,11 +1,13 @@
-asect 0xdf
+asect 0x0020
 anyChangesFlag: ds 1 
+minBound: ds 1 # левая верхняя граница
+maxBound: ds 1 # правая нижняя граница
 
-asect 0xe0
+asect 0x0010
 birthCondition: ds 8
 deathCondition: ds 8
 
-asect 0xf0
+asect 0x0000
 IO_Y: ds 1
 IO_X: ds 1
 gameState: ds 1 #старт 1, финиш 0
@@ -21,7 +23,7 @@ showResult: ds 1 # нужно для status bar для показа резуль
 noAnyAlive: ds 1 #все клетки мертвы
 
 
-asect 0x00
+asect 0x0100
 br main
 
 computingCell: #r0 - состояние ячейки, r1 - сумма соседей
@@ -65,8 +67,8 @@ rts
 
 
 main:
-    setsp 0xdf
-    
+    setsp 0x0040
+
     ldi r0, gameState
     do
         ld r0, r1
@@ -90,9 +92,23 @@ main:
         ld r0, r0
         tst r0
     is nz
-        ldi r2, 15 # границы
+        ldi r0, minBound
+        ldi r1, 1
+        st r0, r1
+        ldi r0, maxBound
+        ldi r1, 30
+        st r0, r1
+
+        ldi r2, 1 # границы
+    else
+        ldi r0, minBound
+        ldi r1, 0
+        st r0, r1
+        ldi r0, maxBound
+        ldi r1, 31
+        st r0, r1
     fi
-    
+
 
     generation:
 
@@ -102,12 +118,11 @@ main:
         tst r0
     is nz
         if
-            tst r2
-        is z
+            ldi r0, 15
+            cmp r2, r0
+        is eq
             br showResultOfGame
         fi
-
-        push r2
 
         if
             ldi r0, noAnyAlive
@@ -121,7 +136,38 @@ main:
             st r0, r0
             br main
         fi
+
+        push r2
     fi
+
+
+#======================# Промежуточные метки для возврата в main/generation
+    main1: 
+    if
+        pop r0
+        ldi r1, 0x0f
+        cmp r0, r1
+    is hs
+        pop r0
+        br main
+    else
+        push r0
+    fi
+    
+    generation1:
+    if
+        pop r0
+        ldi r1, 0x03
+        cmp r0, r1
+    is hs
+        pop r0
+        br generation
+    else 
+        push r0
+    fi
+#======================#
+
+
 
     ldi r0, anyChangesFlag
     ldi r1, 0
@@ -130,32 +176,41 @@ main:
     ldi r0, updateFixedBuffer
     st r0, r0 # обновляем экран
     
-    ldi r3, 31 # Y
-    do
-        if
-            ldi r0, gameState
-            ld r0, r0
-            tst r0
-        is z
-            br main
-        fi
+    ldi r3, IO_Y
+    ldi r0, minBound
+    ld r0, r3
+    push r3
 
-        push r3
-        ldi r0, IO_Y
+
+
+    do
+        
+        ldi r0, IO_Y #отправляем Y в схему
         st r0, r3
 
-        if
-            ldi r0, isRowNull
-            ld r0, r0
-            tst r0
-        is nz
-            br nextRow
-        fi
+        #пропуск пустой строки
+        ldi r0, isRowNull
+        ld r0, r0
+        tst r0
+        bnz nextRow
+        
 
-        ldi r3, 31 # X
+        ldi r3, IO_X
+        ldi r0, minBound
+        ld r0, r3
+        
 
         do
-            ldi r0, IO_X
+            #проверка на game OFF
+            if
+                ldi r0, gameState
+                ld r0, r0
+                tst r0
+            is z
+                jsr main1
+            fi
+
+            ldi r0, IO_X #отправляем X в схему
             st r0, r3
 
             ldi r0, cellState
@@ -178,14 +233,25 @@ main:
                     st r0, r1 # флаг изменений = 1
                 fi
             fi
+            
+            
+            inc r3
 
-            dec r3
-        until mi
+            ldi r0, maxBound
+            ld r0, r0
+            cmp r3, r0
+        until gt
         
         nextRow:
         pop r3
-        dec r3
-    until mi
+        inc r3
+        ldi r0, maxBound
+        ld r0, r0
+        cmp r3, r0
+        push r3
+    until gt
+
+
 
     if
         ldi r0, gameMode
@@ -193,14 +259,14 @@ main:
         tst r0
     is nz
         pop r2
-        dec r2
+        inc r2
     fi
 
     if
         ldi r0, gameMode
         ld r0, r0
         tst r0
-    is z
+    is z # если creative
         ldi r0, anyChangesFlag 
         ld r0, r0
         if 
@@ -208,12 +274,25 @@ main:
         is z
             ldi r0, gameState
             st r0, r0
-            br main
+            jsr main1
         else
-            br generation
+            jsr generation1
         fi
-    else
-        br generation
+    else # если survival
+        ldi r0, minBound
+        ld r0, r1
+        inc r1
+        st r0, r1 
+
+        ldi r0, maxBound
+        ld r0, r1
+        ldi r0, 31
+        push r2
+        sub r0, r2
+        ldi r0, maxBound
+        st r0, r2
+        pop r2
+        jsr generation1
     fi
 
 halt
