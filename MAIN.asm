@@ -21,7 +21,7 @@ countOfNeighbors: ds 1  #кол во живых соседей
 isRowNull: ds 1 #пропуск строки
 showResult: ds 1 # нужно для status bar для показа результата win / lose
 noAnyAlive: ds 1 #все клетки мертвы
-
+zoneWidth: ds 1 #ширина зоны
 
 asect 0x0100
 br main
@@ -99,7 +99,7 @@ main:
         ldi r1, 30
         st r0, r1
 
-        ldi r2, 1 # границы
+        ldi r2, 0 # границы зоны
     else
         ldi r0, minBound
         ldi r1, 0
@@ -118,7 +118,8 @@ main:
         tst r0
     is nz
         if
-            ldi r0, 15
+            ldi r0, zoneWidth
+            ld r0, r0
             cmp r2, r0
         is eq
             br showResultOfGame
@@ -136,8 +137,6 @@ main:
             st r0, r0
             br main
         fi
-
-        push r2
     fi
 
 
@@ -179,11 +178,19 @@ main:
     ldi r3, IO_Y
     ldi r0, minBound
     ld r0, r3
-    push r3
 
 
 
     do
+        push r3
+        #проверка на game OFF
+        if
+            ldi r0, gameState
+            ld r0, r0
+            tst r0
+        is z
+            jsr main1
+        fi
         
         ldi r0, IO_Y #отправляем Y в схему
         st r0, r3
@@ -201,14 +208,7 @@ main:
         
 
         do
-            #проверка на game OFF
-            if
-                ldi r0, gameState
-                ld r0, r0
-                tst r0
-            is z
-                jsr main1
-            fi
+            
 
             ldi r0, IO_X #отправляем X в схему
             st r0, r3
@@ -221,7 +221,9 @@ main:
             if 
                 tst r1
             is nz
+                push r2
                 jsr computingCell
+                pop r2
             else
                 if
                     tst r0
@@ -248,7 +250,7 @@ main:
         ldi r0, maxBound
         ld r0, r0
         cmp r3, r0
-        push r3
+        
     until hs
 
 
@@ -258,7 +260,6 @@ main:
         ld r0, r0
         tst r0
     is nz
-        pop r2
         inc r2
     fi
 
