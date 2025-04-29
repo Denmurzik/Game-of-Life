@@ -29,10 +29,10 @@ br main
 computingCell: #r0 - состояние ячейки, r1 - сумма соседей
     if 
         tst r0
-    is nz
-        ldi r2, deathCondition
-    else
+    is z
         ldi r2, birthCondition
+    else
+        ldi r2, deathCondition
     fi
 
     dec r1
