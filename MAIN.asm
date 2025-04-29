@@ -242,7 +242,7 @@ main:
             ldi r0, maxBound
             ld r0, r0
             cmp r3, r0
-        until hs
+        until hi
         
         nextRow:
         pop r3
@@ -251,7 +251,7 @@ main:
         ld r0, r0
         cmp r3, r0
         
-    until hs
+    until hi
 
 
 
