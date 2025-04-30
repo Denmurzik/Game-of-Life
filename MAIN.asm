@@ -173,7 +173,7 @@ main:
     st r0, r1 # флаг изменений = 0
 
     ldi r0, updateFixedBuffer
-    st r0, r0 # обновляем экран
+    st r0, r0 # обновляем буфер
     
     ldi r3, IO_Y
     ldi r0, minBound
