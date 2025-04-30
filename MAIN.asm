@@ -3,7 +3,7 @@ anyChangesFlag: ds 1
 minBound: ds 1 # левая верхняя граница
 maxBound: ds 1 # правая нижняя граница
 
-asect 0x0010
+asect 0x0010 #таблицы условий 
 birthCondition: ds 8
 deathCondition: ds 8
 
