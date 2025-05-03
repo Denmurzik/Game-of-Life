@@ -16,28 +16,50 @@ IOsurvivalCondition: ds 1 #кол во соседей для выживания
 gameMode: ds 1 # режим игры 0 - обычный, 1 - с границами
 changeCellState: ds 1 #изменить состояние текущей клетки на противоположное
 updateFixedBuffer: ds 1 #обновить экран
-cellState: ds 1 
+cellState: ds 1 #текущее состояние ячейки
 countOfNeighbors: ds 1  #кол во живых соседей  
 isRowNull: ds 1 #пропуск строки
 showResult: ds 1 # нужно для status bar для показа результата win / lose
 noAnyAlive: ds 1 #все клетки мертвы
 zoneWidth: ds 1 #ширина зоны
+survivalCondifNull: ds 1 # условие смерти, если нет соседей
 
 asect 0x0100
 br main
 
+
 computingCell: #r0 - состояние ячейки, r1 - сумма соседей
-    if 
+    if
         tst r0
-    is z
-        ldi r2, birthCondition
-    else
-        ldi r2, deathCondition
+    is z 
+        if
+            tst r1
+        is z
+            rts
+        fi
     fi
 
-    dec r1
-    add r1, r2 # адрес ячейки условия
-    ld r2, r2
+    if
+        tst r1
+    is z # если нет соседей
+        ldi r2, survivalCondifNull
+        ld r2, r2
+
+        
+    else # если есть соседи
+        if 
+            tst r0
+        is z
+            ldi r2, birthCondition
+        else
+            ldi r2, deathCondition
+        fi
+
+        dec r1
+        add r1, r2 # адрес ячейки условия
+        ld r2, r2
+    fi
+
 
     if
         tst r2
@@ -140,7 +162,7 @@ main:
     fi
 
 
-#======================# Промежуточные метки для возврата в main/generation
+#=======================# Промежуточные метки для возврата в main/generation
     main1: 
     if
         pop r0
@@ -164,7 +186,7 @@ main:
     else 
         push r0
     fi
-#======================#
+#=======================#
 
 
 
@@ -218,24 +240,10 @@ main:
             ldi r1, countOfNeighbors
             ld r1, r1
 
-            if 
-                tst r1
-            is nz
-                push r2
-                jsr computingCell
-                pop r2
-            else
-                if
-                    tst r0
-                is nz
-                    ldi r0, changeCellState
-                    st r0, r0
-                    ldi r0, anyChangesFlag
-                    ldi r1, 1
-                    st r0, r1 # флаг изменений = 1
-                fi
-            fi
             
+            push r2
+            jsr computingCell
+            pop r2
             
             inc r3
 
