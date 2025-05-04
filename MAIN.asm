@@ -1,11 +1,12 @@
-asect 0x0020
+asect 0x0030
 anyChangesFlag: ds 1 
 minBound: ds 1 # левая верхняя граница
 maxBound: ds 1 # правая нижняя граница
 
-asect 0x0010 #таблицы условий 
+asect 0x0020 #таблицы условий 
 birthCondition: ds 8
 deathCondition: ds 8
+
 
 asect 0x0000
 IO_Y: ds 1
@@ -22,7 +23,10 @@ isRowNull: ds 1 #пропуск строки
 showResult: ds 1 # нужно для status bar для показа результата win / lose
 noAnyAlive: ds 1 #все клетки мертвы
 zoneWidth: ds 1 #ширина зоны
-survivalCondifNull: ds 1 # условие смерти, если нет соседей
+deathCondifNull: ds 1 # условие смерти, если нет соседей
+drowPattern: ds 1 # отрисовка паттерна
+IDofPattern: ds 1 # ID паттерна
+
 
 asect 0x0100
 br main
@@ -42,7 +46,7 @@ computingCell: #r0 - состояние ячейки, r1 - сумма сосед
     if
         tst r1
     is z # если нет соседей
-        ldi r2, survivalCondifNull
+        ldi r2, deathCondifNull
         ld r2, r2
 
         
@@ -88,11 +92,24 @@ rts
 
 
 
-main:
-    setsp 0x0040
 
-    ldi r0, gameState
+main:
+    setsp 0x0080
+
+
+    ldi r2, drowPattern
     do
+        ld r2, r3
+        if 
+            tst r3
+        is nz
+            jsr drow
+            ldi r2, drowPattern
+            st r2, r2 # сбрасываем флаг отрисовки
+        fi
+
+        ldi r2, drowPattern
+        ldi r0, gameState
         ld r0, r1
         tst r1
     until nz  # ждем старта игры
@@ -162,34 +179,6 @@ main:
     fi
 
 
-#=======================# Промежуточные метки для возврата в main/generation
-    main1: 
-    if
-        pop r0
-        ldi r1, 0x0f
-        cmp r0, r1
-    is hs
-        pop r0
-        br main
-    else
-        push r0
-    fi
-    
-    generation1:
-    if
-        pop r0
-        ldi r1, 0x03
-        cmp r0, r1
-    is hs
-        pop r0
-        br generation
-    else 
-        push r0
-    fi
-#=======================#
-
-
-
     ldi r0, anyChangesFlag
     ldi r1, 0
     st r0, r1 # флаг изменений = 0
@@ -211,7 +200,7 @@ main:
             ld r0, r0
             tst r0
         is z
-            jsr main1
+            jsr main
         fi
         
         ldi r0, IO_Y #отправляем Y в схему
@@ -283,9 +272,9 @@ main:
         is z
             ldi r0, gameState
             st r0, r0
-            jsr main1
+            jsr main
         else
-            jsr generation1
+            jsr generation
         fi
     else # если survival
         ldi r0, minBound
@@ -301,8 +290,370 @@ main:
         ldi r0, maxBound
         st r0, r2
         pop r2
-        jsr generation1
+        jsr generation
     fi
+
+
+drow:
+    ldi r0, IO_Y
+    ld r0, r0 
+    ldi r1, IO_X
+    ld r1, r1
+
+    ldi r2, IDofPattern
+    ld r2, r2
+    if 
+        tst r2
+    is z
+        jsr glider
+        rts
+    fi
+    if
+        ldi r3, 1
+        cmp r2, r3
+    is eq
+        jsr blinker
+        rts
+    fi
+    if
+        ldi r3, 2
+        cmp r2, r3
+    is eq
+        jsr butterfly
+        rts
+    fi
+    if 
+        ldi r3, 3
+        cmp r2, r3
+    is eq
+        jsr byflops
+        rts
+    fi
+    if
+        ldi r3, 4
+        cmp r2, r3
+    is eq
+        jsr monogram
+        rts
+    fi
+    if 
+        ldi r3, 5
+        cmp r2, r3
+    is eq
+        jsr mickeyMouse
+        rts
+    fi
+    if 
+        ldi r3, 6
+        cmp r2, r3
+    is eq
+        jsr unix
+        rts
+    fi
+    if
+        ldi r3, 7
+        cmp r2, r3
+    is eq
+        jsr queenBee
+        rts
+    fi
+rts
+
+
+
+#================|Patterns|================#
+
+glider: #r1 - X , r0 - Y
+    ldi r2, changeCellState
+    dec r0
+    st r2, r2
+    inc r0
+    dec r1
+    st r2, r2
+    inc r0
+    st r2, r2
+    inc r1
+    st r2, r2
+    inc r1
+    st r2, r2
+rts
+
+blinker:
+    ldi r2, changeCellState
+    dec r0
+    st r2, r2
+    inc r0
+    st r2, r2
+    inc r0
+    st r2, r2
+rts
+
+butterfly:
+    ldi r2, changeCellState
+    dec r0
+    st r2, r2
+    inc r1
+    st r2, r2
+    dec r0
+    st r2, r2
+    inc r0
+    inc r0
+    st r2, r2
+    inc r0
+    dec r1
+    st r2, r2
+    dec r1
+    st r2, r2
+    dec r0
+    st r2, r2
+    inc r0
+    dec r1
+    st r2, r2
+rts
+
+byflops:
+    ldi r2, changeCellState
+    dec r1
+    st r2, r2
+    dec r1
+    dec r0
+    st r2, r2
+    inc r1
+    inc r1
+    dec r0
+    st r2, r2
+    dec r0
+    st r2, r2
+    inc r1
+    inc r0
+    inc r1
+    st r2, r2
+    inc r0
+    inc r0
+    inc r1
+    st r2, r2
+    dec r1
+    st r2, r2
+    dec r1
+    st r2, r2
+    dec r1
+    st r2, r2
+    dec r1
+    dec r1
+    inc r0
+    st r2, r2
+    inc r1
+    inc r1
+    inc r0
+    st r2, r2
+    inc r0
+    st r2, r2
+    inc r1
+    dec r0
+    inc r1
+    st r2, r2
+rts
+
+monogram:
+    ldi r2, changeCellState
+    dec r0
+    st r2, r2
+    dec r1
+    inc r0
+    st r2, r2
+    dec r1
+    st r2, r2
+    dec r0
+    st r2, r2
+    dec r0
+    st r2, r2
+    dec r1
+    st r2, r2
+    inc r0
+    inc r0
+    inc r0
+    inc r0
+    st r2, r2
+    inc r1
+    st r2, r2
+    dec r0
+    st r2, r2
+    inc r1
+    inc r1
+    st r2, r2
+    inc r1
+    dec r0
+    st r2, r2
+    inc r1
+    st r2, r2
+    dec r0
+    st r2, r2
+    dec r0
+    st r2, r2
+    inc r1
+    st r2, r2
+    inc r0
+    inc r0
+    inc r0
+    inc r0
+    st r2, r2
+    dec r1
+    st r2, r2
+    dec r0
+    st r2, r2
+rts
+
+mickeyMouse:
+    ldi r2, changeCellState
+    st r2, r2
+    dec r1
+    dec r0
+    st r2, r2
+    dec r0
+    st r2, r2
+    dec r1
+    dec r0
+    st r2, r2
+    dec r1
+    st r2, r2
+    dec r1
+    dec r0
+    st r2, r2
+    dec r0
+    st r2, r2
+    dec r0
+    inc r1
+    st r2, r2
+    inc r1
+    st r2, r2
+    inc r1
+    inc r0
+    st r2, r2
+    inc r0
+    st r2, r2
+    inc r1
+    st r2, r2
+    inc r1
+    st r2, r2
+    inc r1
+    st r2, r2
+    dec r0
+    st r2, r2
+    dec r0
+    inc r1
+    st r2, r2
+    inc r1
+    st r2, r2
+    inc r1
+    inc r0
+    st r2, r2
+    inc r0
+    st r2, r2
+    inc r0
+    dec r1
+    st r2, r2
+    dec r1
+    st r2, r2
+    dec r1
+    inc r0
+    st r2, r2
+    dec r1
+    st r2, r2
+    dec r1
+    st r2, r2
+    inc r1
+    inc r1
+    inc r0
+    st r2, r2
+    inc r0
+    dec r1
+    st r2, r2
+rts
+
+unix:
+    ldi r2, changeCellState
+    st r2, r2
+    dec r1
+    st r2, r2
+    dec r1
+    dec r0
+    st r2, r2
+    dec r1
+    dec r1
+    st r2, r2
+    dec r1
+    st r2, r2
+    dec r0
+    st r2, r2
+    inc r1
+    st r2, r2
+    inc r1
+    inc r1
+    inc r1
+    st r2, r2
+    dec r0
+    inc r1
+    st r2, r2
+    dec r0
+    inc r1
+    st r2, r2
+    dec r0
+    dec r0
+    dec r0
+    st r2, r2
+    dec r0
+    st r2, r2
+    inc r1
+    st r2, r2
+    inc r0
+    st r2, r2
+    inc r0
+    inc r0
+    st r2, r2
+    inc r1
+    inc r0
+    st r2, r2
+    inc r0
+    st r2, r2
+rts
+
+queenBee:
+    ldi r2, changeCellState
+    st r2, r2
+    dec r1
+    st r2, r2
+    inc r0
+    dec r1
+    st r2, r2
+    dec r1
+    st r2, r2
+    dec r0
+    dec r0
+    inc r1
+    st r2, r2
+    inc r1
+    dec r0
+    st r2, r2
+    dec r0
+    inc r1
+    st r2, r2
+    inc r1
+    inc r0
+    st r2, r2
+    inc r0
+    inc r1
+    st r2, r2
+    inc r0
+    dec r1
+    st r2, r2
+    inc r0
+    inc r1
+    st r2, r2
+    inc r1
+    st r2, r2
+rts 
+
+#=============|End of Patterns|=============#
 
 halt
 end
