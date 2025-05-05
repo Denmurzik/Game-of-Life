@@ -1243,7 +1243,7 @@ This file is intended to be loaded by Logisim (http://www.cburch.com/logisim/).
       <a name="label" val="I/O Y"/>
       <a name="labelfont" val="SansSerif plain 9"/>
     </comp>
-    <comp loc="(750,1230)" name="wait"/>
+    <comp loc="(750,1230)" name="delay"/>
     <comp lib="0" loc="(1730,440)" name="Pin">
       <a name="output" val="true"/>
       <a name="width" val="32"/>
@@ -16585,7 +16585,7 @@ aa 88 8d aa 8d 8c aa 8c
       <a name="labelfont" val="Comic Sans MS bold 14"/>
       <a name="labelcolor" val="#ffffff"/>
     </comp>
-    <comp loc="(640,410)" name="zone width"/>
+    <comp loc="(640,410)" name="input zone width"/>
     <comp lib="5" loc="(950,720)" name="DotMatrix">
       <a name="inputtype" val="row"/>
       <a name="matrixcols" val="2"/>
@@ -16609,7 +16609,7 @@ aa 88 8d aa 8d 8c aa 8c
       <a name="labelcolor" val="#ffea02"/>
     </comp>
     <comp loc="(1030,720)" name="input surv. cond."/>
-    <comp loc="(640,260)" name="patterns"/>
+    <comp loc="(640,260)" name="input num of pattern"/>
     <comp lib="5" loc="(660,110)" name="DotMatrix">
       <a name="inputtype" val="row"/>
       <a name="matrixcols" val="32"/>
@@ -16773,8 +16773,8 @@ aa 88 8d aa 8d 8c aa 8c
       <a name="color" val="#0071bc"/>
     </comp>
   </circuit>
-  <circuit name="wait">
-    <a name="circuit" val="wait"/>
+  <circuit name="delay">
+    <a name="circuit" val="delay"/>
     <a name="clabel" val=""/>
     <a name="clabelup" val="east"/>
     <a name="clabelfont" val="SansSerif plain 12"/>
@@ -16825,8 +16825,8 @@ aa 88 8d aa 8d 8c aa 8c
       <a name="size" val="20"/>
     </comp>
   </circuit>
-  <circuit name="patterns">
-    <a name="circuit" val="patterns"/>
+  <circuit name="input num of pattern">
+    <a name="circuit" val="input num of pattern"/>
     <a name="clabel" val=""/>
     <a name="clabelup" val="east"/>
     <a name="clabelfont" val="SansSerif plain 12"/>
@@ -16959,8 +16959,8 @@ aa 88 8d aa 8d 8c aa 8c
       <a name="labelloc" val="east"/>
     </comp>
   </circuit>
-  <circuit name="zone width">
-    <a name="circuit" val="zone width"/>
+  <circuit name="input zone width">
+    <a name="circuit" val="input zone width"/>
     <a name="clabel" val=""/>
     <a name="clabelup" val="east"/>
     <a name="clabelfont" val="SansSerif plain 12"/>
