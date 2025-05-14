@@ -24,7 +24,7 @@ showResult: ds 1 # нужно для status bar для показа резуль
 noAnyAlive: ds 1 #все клетки мертвы
 zoneWidth: ds 1 #ширина зоны
 deathCondifNull: ds 1 # условие смерти, если нет соседей
-drowPattern: ds 1 # отрисовка паттерна
+drawPattern: ds 1 # отрисовка паттерна
 IDofPattern: ds 1 # ID паттерна
 
 
@@ -97,18 +97,18 @@ main:
     setsp 0x0080
 
 
-    ldi r2, drowPattern
+    ldi r2, drawPattern
     do
         ld r2, r3
         if 
             tst r3
         is nz
-            jsr drow
-            ldi r2, drowPattern
+            jsr draw
+            ldi r2, drawPattern
             st r2, r2 # сбрасываем флаг отрисовки
         fi
 
-        ldi r2, drowPattern
+        ldi r2, drawPattern
         ldi r0, gameState
         ld r0, r1
         tst r1
@@ -294,7 +294,7 @@ main:
     fi
 
 
-drow:
+draw:
     ldi r0, IO_Y
     ld r0, r0 
     ldi r1, IO_X
